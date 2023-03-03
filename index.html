@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Canvas</title>
+	<link type="text/css" href="styles.css" rel="stylesheet">
+</head>
+<body>
+	<canvas></canvas>
+	<script type="text/javascript">
+		const canvas = document.querySelector("canvas");
+		const context = canvas.getContext("2d");
+
+		class Ball {
+			constructor(x, y, r, context, velX, velY, color) {
+				this.x = x;
+				this.y = y;
+				this.radius = r;
+				this.ctx = context;
+				this.velX = velX;
+				this.velY = velY;
+				this.color = color;
+			}
+
+			draw() {
+				this.ctx.fillStyle = this.color;
+
+				this.ctx.beginPath();
+				this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+				this.ctx.fill();
+			}
+
+			update() {
+				this.x += this.velX;
+				this.y += this.velY;
+
+				if (this.x + this.velX < 0 || this.x + this.velX > canvas.width) {
+					this.velX *= -1;
+				}
+
+				if (this.y + this.velY < 0 || this.y + this.velY > canvas.height) {
+					this.velY *= -1;
+				}
+
+				// if (this.x > canvas.width) {
+				// 	this.x -= canvas.width;
+				// } else if (this.x < 0) {
+				// 	this.x += canvas.width;
+				// }
+
+				// if (this.y > canvas.height) {
+				// 	this.y -= canvas.height;
+				// } else if (this.y < 0) {
+				// 	this.y += canvas.height;
+				// }
+			}
+		}
+
+		canvas.width = innerWidth;
+		canvas.height = innerHeight;
+
+		addEventListener("resize", () => {
+			canvas.width = innerWidth;
+			canvas.height = innerHeight;
+
+			for (let i = 0; i < balls.length; i++) {
+				const ball = balls[i];
+
+				if (ball.x > canvas.width) {
+					ball.x -= canvas.width / 2;
+				}
+
+				if (ball.y > canvas.height) {
+					ball.y -= canvas.width / 2;
+				}
+			}
+		}, false);
+
+		const balls = [];
+
+		for (let i = 0; i < 50; i++) {
+			const direction = Math.random() * 2 * Math.PI;
+
+			const speed = 5;
+
+			const velocityX = Math.cos(direction) * speed;
+			const velocityY = Math.sin(direction)  * speed;
+
+			const x = Math.random() * canvas.width;
+			const y = Math.random() * canvas.height;
+
+			balls.push(new Ball(x, y, 5, context, velocityX, velocityY, "white"));
+		}
+
+		function animate() {
+			context.fillStyle = "rgba(0, 0, 0, 0.3)";
+			context.fillRect(0, 0, canvas.width, canvas.height);
+
+			for (let i = 0; i < balls.length; i++) {
+				balls[i].draw();
+				balls[i].update();
+			}
+
+			requestAnimationFrame(animate);
+		}
+
+		animate();
+	</script>
+</body>
+</html>
